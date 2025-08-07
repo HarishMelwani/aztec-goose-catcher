@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Goose Word Catch - Aztec & Privacy Full Version with Twitter Share
+    </title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        background: linear-gradient(to bottom, #2e0854, #8b56ff);
+        font-family: "MedievalSharp", cursive, "Segoe UI", Tahoma, Geneva,
+          Verdana, sans-serif;
+        user-select: none;
+        color: #fff;
+        overflow-x: hidden;
+        font-size: 18px;
+      }
+      #game-area {
+        position: relative;
+        width: 600px;
+        max-width: 95vw;
+        height: 440px;
+        max-height: 70vh;
+        background: radial-gradient(circle at bottom center, #5a2e8b, #2e0854);
+        margin: 20px auto;
+        border-radius: 16px;
+        box-shadow: 0 0 40px #a370ffaa;
+        overflow: hidden;
+      }
+      #player {
+        position: absolute;
+        bottom: 10px;
+        left: 45%;
+        width: 60px;
+        height: 60px;
+        max-width: 10vw;
+        max-height: 10vw;
+        background: url("https://i.ibb.co/kVbrFf9W/48499808-2e8e-4415-a442-e7f39ae5cd0d.png")
+          no-repeat center/contain;
+        border-radius: 50%;
+        z-index: 10;
+        filter: drop-shadow(0 0 4px #a371ff);
+        transition: left 0.1s ease;
+      }
+      #score,
+      #wordsCaught,
+      #penaltyInfo,
+      #statusMessage,
+      #leaderboardTitle {
+        font-weight: bold;
+        font-size: 22px;
+        text-align: center;
+        margin: 6px auto;
+        user-select: none;
+        text-shadow: 0 0 6px #35005f;
+      }
+      #penaltyInfo {
+        color: #ff5555;
+        min-height: 28px;
+      }
+      #statusMessage {
+        color: #88ff88;
+        min-height: 28px;
+      }
+      #word-status {
+        font-weight: 700;
+        font-size: 24px;
+        text-align: center;
+        margin: 12px auto 6px auto;
+        text-shadow: 0 0 8px #8e5fff;
+      }
+      .letter,
+      .bomb {
+        position: absolute;
+        font-weight: bold;
+        user-select: none;
+        cursor: default;
+        user-select: none;
+        text-shadow: 1px 1px 2px black;
+      }
+      .letter {
+        font-size: clamp(18px, 4vw, 32px);
+        color: #c8b9ff;
+        text-shadow: 1px 1px 2px #362b5d, 0 0 12px #a370ffcc;
+        z-index: 5;
+        font-family: "Segoe UI Black", Arial Black, sans-serif;
+      }
+      .bomb {
+        font-size: clamp(24px, 5vw, 40px);
+        color: #ff4444;
+        user-select: none;
+        z-index: 8;
+        text-shadow: 1px 1px 3px black, 0 0 9px #ff222299;
+      }
+      #username-form {
+        max-width: 600px;
+        margin: 10px auto 20px auto;
+        text-align: center;
+      }
+      #username-form input[type="text"] {
+        width: 90%;
+        max-width: 260px;
+        padding: 10px;
+        font-size: 1.1em;
+        border-radius: 8px;
+        border: 1.5px solid #9b89ff;
+        margin-bottom: 12px;
+        outline-color: #a370ff;
+        box-sizing: border-box;
+      }
+      #username-form button {
+        padding: 10px 18px;
+        font-size: 1.1em;
+        background: #6a1ab1;
+        border: none;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        font-weight: 700;
+        box-shadow: 0 0 12px #b888ffcc;
+        transition: background 0.3s ease;
+      }
+      #username-form button:hover {
+        background: #8740e5;
+      }
+      #submit-result {
+        margin-top: 12px;
+        font-size: 1.1em;
+        color: #88ff88;
+        font-weight: 700;
+        min-height: 28px;
+      }
+      #leaderboard {
+        max-width: 600px;
+        margin: 10px auto 30px auto;
+        background: #2e085450;
+        border-radius: 12px;
+        box-shadow: 0 0 12px #b888ff88;
+        padding: 15px;
+        color: #ddd;
+      }
+      #leaderboard table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      #leaderboard th,
+      #leaderboard td {
+        border-bottom: 1px solid #4b3479;
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 1.1em;
+      }
+      #leaderboard th {
+        background: #7a4fffcc;
+        color: white;
+        font-weight: 700;
+        text-shadow: 0 0 3px #4f10ffbb;
+      }
+      #mobile-controls {
+        text-align: center;
+        margin: 8px auto 20px auto;
+        user-select: none;
+        z-index: 20;
+      }
+      #mobile-controls button {
+        font-size: clamp(24px, 6vw, 28px);
+        margin: 0 12px;
+        padding: 8px 18px;
+        border-radius: 12px;
+        border: none;
+        background: #7645e9bb;
+        color: white;
+        font-weight: 700;
+        box-shadow: 0 0 10px #a370ffcc;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        user-select: none;
+      }
+      #mobile-controls button:hover {
+        background: #8f69ffcc;
+      }
+      #twitter-share-btn {
+        display: block;
+        margin: 10px auto 20px auto;
+        font-weight: 700;
+        font-size: 1.1em;
+        padding: 10px 20px;
+        border-radius: 10px;
+        border: none;
+        background: #1da1f2;
+        color: white;
+        cursor: pointer;
+        user-select: none;
+        box-shadow: 0 0 16px #1da1f288;
+        transition: background 0.3s ease;
+      }
+      #twitter-share-btn:hover {
+        background: #0d95e8;
+      }
+
+      @media (max-width: 640px) {
+        #game-area {
+          height: 60vw;
+        }
+        #player {
+          width: 12vw;
+          height: 12vw;
+        }
+        #score,
+        #wordsCaught,
+        #penaltyInfo,
+        #statusMessage,
+        #leaderboardTitle {
+          font-size: 1.1rem;
+          margin: 4px auto;
+        }
+        #word-status {
+          font-size: 1.3rem;
+          margin: 8px auto 4px auto;
+        }
+        #username-form input[type="text"] {
+          max-width: 90vw;
+        }
+        #mobile-controls button {
+          font-size: 20vw;
+          max-font-size: 28px;
+          max-width: 45vw;
+          padding: 8px 27px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="score">Score: 0</div>
+    <div id="wordsCaught">Words Completed: 0</div>
+    <div
+      id="penaltyInfo"
+      aria-live="polite"
+      role="alert"
+      aria-atomic="true"
+    ></div>
+    <div
+      id="statusMessage"
+      aria-live="polite"
+      role="status"
+      aria-atomic="true"
+    ></div>
+
+    <div
+      id="game-area"
+      tabindex="0"
+      aria-label="Aztec Word Catch Game Area"
+      role="application"
+    >
+      <div id="player" aria-label="Goose character" role="img"></div>
+    </div>
+    <div id="word-status"></div>
+
+    <div id="mobile-controls" aria-label="Mobile movement controls">
+      <button id="btn-left" aria-label="Move Left">⬅️</button>
+      <button id="btn-right" aria-label="Move Right">➡️</button>
+    </div>
+
+    <button id="twitter-share-btn" aria-label="Share your score on Twitter">
+      Share on Twitter 🐦
+    </button>
+
+    <div
+      id="username-form"
+      aria-label="Submit your score to leaderboard"
+      style="display: none"
+    >
+      <input
+        type="text"
+        id="discordUsername"
+        placeholder="Enter Discord username"
+        aria-label="Discord username input"
+        maxlength="20"
+        autocomplete="off"
+      />
+      <button id="submitScoreBtn">Submit Score</button>
+      <div id="submit-result" role="alert" aria-live="polite"></div>
+    </div>
+
+    <div id="leaderboard-title" style="display: none">
+      <h2 style="text-align: center; color: #b8a0ff">
+        Leaderboard (Top Scores)
+      </h2>
+    </div>
+    <div
+      id="leaderboard"
+      style="display: none"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <table aria-label="Leaderboard table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Discord Username</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body"></tbody>
+      </table>
+    </div>
+
+    <!-- Background music -->
+    <audio
+      id="bg-music"
+      src="https://track.pstmrk.it/3s/storage.googleapis.com%2Fcadenzabox-prod-bucket%2Fdownload%2F6894596f0ac374aad30cac00%2Ftracks%2FAXIS1087_05_Tijuana%2520Game%2520Show_Full.mp3%3FX-Goog-Algorithm%3DGOOG4-RSA-SHA256%26X-Goog-Credential%3D610722662365-compute%2540developer.gserviceaccount.com%252F20250807%252Fauto%252Fstorage%252Fgoog4_request%26X-Goog-Date%3D20250807T074458Z%26X-Goog-Expires%3D259200%26X-Goog-SignedHeaders%3Dhost%26response-content-disposition%3Dattachment%26X-Goog-Signature%3D9cc202de904b3337dcf14bde7abe22ffc5839434faf36780f56176a5df9ec51de91aceb6985ed3aa2861844f6758489cbc77de6c131302e9a1bceffad367b6b20455118c16a158c42599a45d47f49525f91b4d98d09a7b6820c8694fd21f820ef8cd235ea2c4c2903d2545af12bca4ec99b8a4ca105ac4f5686720807ab1e7796db1a6bb42186e90b26b13e527a265fc1a0b99db6eb174383effb55730e8b4941c300d2bac0cae1982531c5b07e8864ec3b0fcd51e4d1ec749a463b1ef131848319fc4a9f0d1c6869b7aad187625c364eeb9d5c31fa714d7892ddbba210c542bf191828e9cb831c9da2ecd02f17ef5043d508e98b3090852084a3da940426ff6/g64w/0TG-AQ/AQ/9754b827-208a-4cfe-9bcb-82c1faa2497d/2/hueIHE5tAG"
+      loop
+      autoplay
+      muted
+    ></audio>
+    <div style="text-align: center; margin-top: 10px">
+      <button id="music-toggle" aria-label="Toggle Background Music">
+        🔈 Music Off
+      </button>
+    </div>
+
+    <!-- html2canvas (for screenshot capture) -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <script>
+      // Game variables and DOM refs
+      const gameArea = document.getElementById("game-area");
+      const player = document.getElementById("player");
+      const scoreDisplay = document.getElementById("score");
+      const wordsCaughtDisplay = document.getElementById("wordsCaught");
+      const penaltyInfo = document.getElementById("penaltyInfo");
+      const statusMessage = document.getElementById("statusMessage");
+      const wordStatus = document.getElementById("word-status");
+      const usernameForm = document.getElementById("username-form");
+      const discordUsernameInput = document.getElementById("discordUsername");
+      const submitScoreBtn = document.getElementById("submitScoreBtn");
+      const submitResult = document.getElementById("submit-result");
+      const leaderboardTitle = document.getElementById("leaderboard-title");
+      const leaderboardDiv = document.getElementById("leaderboard");
+      const leaderboardBody = document.getElementById("leaderboard-body");
+      const btnLeft = document.getElementById("btn-left");
+      const btnRight = document.getElementById("btn-right");
+      const twitterShareBtn = document.getElementById("twitter-share-btn");
+      const bgMusic = document.getElementById("bg-music");
+      const musicToggleBtn = document.getElementById("music-toggle");
+
+      const gameWidth = gameArea.clientWidth;
+      const gameHeight = gameArea.clientHeight;
+
+      const words = [
+        { word: "AZTEC", bonus: false },
+        { word: "PRIVACY", bonus: false },
+        { word: "NOIR", bonus: true },
+        { word: "ZKROLLUP", bonus: true },
+        { word: "ENCRYPTION", bonus: false },
+        { word: "SCALING", bonus: false },
+        { word: "SMARTCONTRACT", bonus: false },
+        { word: "CONFIDENTIAL", bonus: false },
+        { word: "BLOCKCHAIN", bonus: false },
+      ];
+
+      const bombChar = "💣";
+
+      let currentWordIndex = 0;
+      let currentLetterIndex = 0;
+      let score = 0;
+      let wordsCompletedTotal = 0;
+
+      let playerX = gameWidth * 0.45;
+      const playerWidth = gameWidth * 0.1;
+      const playerSpeed = gameWidth * 0.025;
+
+      let fallingObjects = [];
+
+      let fallSpeed = 2.0;
+      let bombFrequency = 0.07;
+
+      const allLettersSet = new Set(words.flatMap((w) => w.word.split("")));
+      const allLetters = Array.from(allLettersSet);
+
+      const dropInterval = 900;
+      let lastDropTime = 0;
+
+      let gameEnded = false;
+
+      const catchSound = new Audio(
+        "https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
+      );
+      const bombSound = new Audio(
+        "https://actions.google.com/sounds/v1/explosions/explosion.ogg"
+      );
+      const completeSound = new Audio(
+        "https://actions.google.com/sounds/v1/cartoon/slide_whistle_to_drum_hit.ogg"
+      );
+
+      let penaltyTimeout = null;
+      let statusTimeout = null;
+
+      // Music toggle
+      musicToggleBtn.addEventListener("click", () => {
+        if (bgMusic.muted) {
+          bgMusic.muted = false;
+          musicToggleBtn.textContent = "🔊 Music On";
+        } else {
+          bgMusic.muted = true;
+          musicToggleBtn.textContent = "🔈 Music Off";
+        }
+      });
+
+      function updateWordStatus() {
+        const wordObj = words[currentWordIndex];
+        const word = wordObj.word;
+        let display = "";
+        for (let i = 0; i < word.length; i++) {
+          display += i < currentLetterIndex ? "_ " : word[i] + " ";
+        }
+        let bonusText = wordObj.bonus ? " (Bonus Word!)" : "";
+        wordStatus.textContent =
+          "Catch these letters: " + display.trim() + bonusText;
+      }
+
+      function updateDisplays() {
+        scoreDisplay.textContent = `Score: ${score}`;
+        wordsCaughtDisplay.textContent = `Words Completed: ${wordsCompletedTotal}`;
+      }
+
+      function createFallingLetter(char) {
+        const letter = document.createElement("div");
+        letter.classList.add("letter");
+        letter.textContent = char;
+        const letterWidth = Math.min(gameWidth * 0.06, 30);
+        const leftPos = Math.random() * (gameWidth - letterWidth);
+        letter.style.left = `${leftPos}px`;
+        letter.style.top = `-40px`;
+        gameArea.appendChild(letter);
+        return { element: letter, char: char, x: leftPos };
+      }
+
+      function createBomb() {
+        const bomb = document.createElement("div");
+        bomb.classList.add("bomb");
+        bomb.textContent = bombChar;
+        const bombWidth = Math.min(gameWidth * 0.08, 40);
+        const leftPos = Math.random() * (gameWidth - bombWidth);
+        bomb.style.left = `${leftPos}px`;
+        bomb.style.top = `-40px`;
+        gameArea.appendChild(bomb);
+        return { element: bomb, char: bombChar, x: leftPos };
+      }
+
+      function removeFallingObject(i) {
+        const obj = fallingObjects[i];
+        if (obj && obj.element) {
+          gameArea.removeChild(obj.element);
+        }
+        fallingObjects.splice(i, 1);
+      }
+
+      function applyPenalty(messageText, penaltyPoints) {
+        score = Math.max(0, score - penaltyPoints);
+        penaltyInfo.textContent = messageText;
+        updateDisplays();
+        if (penaltyTimeout) clearTimeout(penaltyTimeout);
+        penaltyTimeout = setTimeout(() => {
+          penaltyInfo.textContent = "";
+        }, 3500);
+        bombSound.play();
+      }
+
+      function showStatusMessage(text) {
+        statusMessage.textContent = text;
+        if (statusTimeout) clearTimeout(statusTimeout);
+        statusTimeout = setTimeout(() => {
+          statusMessage.textContent = "";
+        }, 3500);
+      }
+
+      function updateWordsCompleted() {
+        wordsCaughtDisplay.textContent = `Words Completed: ${wordsCompletedTotal}`;
+      }
+
+      function endGame() {
+        gameEnded = true;
+        penaltyInfo.textContent = "💥 Game Over! You caught a bomb!";
+        statusMessage.textContent =
+          "Enter your Discord username below to submit your score.";
+        usernameForm.style.display = "block";
+        bombSound.play();
+      }
+
+      function updateFallingObjects() {
+        if (gameEnded) return;
+
+        for (let i = fallingObjects.length - 1; i >= 0; i--) {
+          const obj = fallingObjects[i];
+          let top = parseFloat(obj.element.style.top);
+          top += fallSpeed;
+          obj.element.style.top = `${top}px`;
+
+          const playerTop = gameHeight - 10;
+          const playerLeft = playerX;
+          const playerRight = playerX + playerWidth;
+          const objLeft = obj.x;
+          const objRight = obj.x + 30;
+
+          if (
+            top + 30 >= playerTop &&
+            objRight >= playerLeft &&
+            objLeft <= playerRight
+          ) {
+            if (obj.char === bombChar) {
+              removeFallingObject(i);
+              endGame();
+              return;
+            } else {
+              const wordObj = words[currentWordIndex];
+              const currentWord = wordObj.word;
+              let expectedChar = currentWord[currentLetterIndex];
+
+              if (obj.char === expectedChar) {
+                currentLetterIndex++;
+                let points = wordObj.bonus ? 20 : 10;
+                score += points;
+                updateWordStatus();
+                removeFallingObject(i);
+                catchSound.play();
+
+                if (currentLetterIndex >= currentWord.length) {
+                  wordsCompletedTotal++;
+                  updateWordsCompleted();
+
+                  currentWordIndex = (currentWordIndex + 1) % words.length;
+                  currentLetterIndex = 0;
+                  updateWordStatus();
+
+                  if (fallSpeed < 8) fallSpeed += 0.3;
+                  if (bombFrequency < 0.2) bombFrequency += 0.007;
+
+                  showStatusMessage(`🎉 Word "${currentWord}" completed!`);
+                  completeSound.play();
+                }
+              } else {
+                applyPenalty(
+                  `❌ Penalty! Incorrect letter "${obj.char}" caught. Expected "${expectedChar}". -10 points`,
+                  10
+                );
+                removeFallingObject(i);
+              }
+            }
+          } else if (top > gameHeight) {
+            removeFallingObject(i);
+          }
+        }
+      }
+
+      function moveLeft() {
+        if (gameEnded) return;
+        playerX -= playerSpeed;
+        if (playerX < 0) playerX = 0;
+        player.style.left = playerX + "px";
+      }
+
+      function moveRight() {
+        if (gameEnded) return;
+        playerX += playerSpeed;
+        if (playerX > gameWidth - playerWidth)
+          playerX = gameWidth - playerWidth;
+        player.style.left = playerX + "px";
+      }
+
+      function handleKeyDown(e) {
+        if (gameEnded) return;
+        if (e.code === "ArrowLeft") moveLeft();
+        if (e.code === "ArrowRight") moveRight();
+      }
+
+      function getNextDropChar() {
+        if (Math.random() < bombFrequency) return bombChar;
+        if (Math.random() < 0.8) {
+          return words[currentWordIndex].word[currentLetterIndex];
+        } else {
+          const neededLetter = words[currentWordIndex].word[currentLetterIndex];
+          const filtered = allLetters.filter((l) => l !== neededLetter);
+          return filtered[Math.floor(Math.random() * filtered.length)];
+        }
+      }
+
+      function gameLoop(time = 0) {
+        if (gameEnded) return;
+
+        if (!lastDropTime) lastDropTime = time;
+        const delta = time - lastDropTime;
+
+        if (delta > dropInterval) {
+          const charToDrop = getNextDropChar();
+          if (charToDrop === bombChar) {
+            fallingObjects.push(createBomb());
+          } else {
+            fallingObjects.push(createFallingLetter(charToDrop));
+          }
+          lastDropTime = time;
+        }
+
+        updateFallingObjects();
+        updateDisplays();
+        requestAnimationFrame(gameLoop);
+      }
+
+      function getLeaderboard() {
+        const data = localStorage.getItem("aztecGooseLeaderboard");
+        if (data) {
+          try {
+            return JSON.parse(data);
+          } catch {
+            return [];
+          }
+        }
+        return [];
+      }
+
+      function saveLeaderboard(leaderboard) {
+        localStorage.setItem(
+          "aztecGooseLeaderboard",
+          JSON.stringify(leaderboard)
+        );
+      }
+
+      function addToLeaderboard(username, score) {
+        const leaderboard = getLeaderboard();
+        leaderboard.push({ username, score });
+        leaderboard.sort((a, b) => b.score - a.score);
+        if (leaderboard.length > 10) leaderboard.length = 10;
+        saveLeaderboard(leaderboard);
+        return leaderboard;
+      }
+
+      function renderLeaderboard() {
+        const lb = getLeaderboard();
+        leaderboardBody.innerHTML = "";
+        if (lb.length === 0) {
+          leaderboardBody.innerHTML =
+            "<tr><td colspan='3' style='text-align:center;'>No scores yet</td></tr>";
+          return;
+        }
+        lb.forEach((entry, idx) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${idx + 1}</td><td>${escapeHtml(
+            entry.username
+          )}</td><td>${entry.score}</td>`;
+          leaderboardBody.appendChild(tr);
+        });
+      }
+
+      function escapeHtml(text) {
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      submitScoreBtn.addEventListener("click", () => {
+        const username = discordUsernameInput.value.trim();
+        if (username.length === 0) {
+          submitResult.textContent = "⚠️ Please enter your Discord username.";
+          submitResult.style.color = "#ff5555";
+          return;
+        }
+        submitResult.textContent = "Saving your score...";
+        submitResult.style.color = "#eee";
+        setTimeout(() => {
+          addToLeaderboard(username, score);
+          showStatusMessage(`Score submitted successfully, ${username}! 🎉`);
+          submitResult.textContent = "";
+          usernameForm.style.display = "none";
+          leaderboardTitle.style.display = "block";
+          leaderboardDiv.style.display = "block";
+          renderLeaderboard();
+        }, 700);
+      });
+
+      twitterShareBtn.addEventListener("click", () => {
+        const scoreText = scoreDisplay.textContent
+          .replace("Score: ", "")
+          .trim();
+
+        html2canvas(gameArea).then((canvas) => {
+          // Trigger download of the screenshot PNG
+          canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "aztec-goose-catcher-score.png";
+            link.click();
+            URL.revokeObjectURL(url);
+          });
+
+          // Compose tweet text
+          const tweetText = encodeURIComponent(
+            `Hey!! The Aztec Goose Catcher Game Is Awesome & I Scored "${scoreText}" points in the game. Can you guys beat me? 🐦🦢 #AztecGooseCatcher`
+          );
+
+          // Your game URL for sharing - replace this with your hosted game URL
+          const gameURL = encodeURIComponent("YOUR_GAME_URL_HERE");
+
+          const twitterURL = `https://twitter.com/intent/tweet?text=${tweetText}&url=${gameURL}`;
+          window.open(twitterURL, "_blank");
+        });
+      });
+
+      // Initialize game UI state
+      player.style.left = playerX + "px";
+      updateWordStatus();
+      updateDisplays();
+
+      gameArea.setAttribute("tabindex", 0);
+      gameArea.focus();
+
+      gameArea.addEventListener("keydown", handleKeyDown);
+      btnLeft.addEventListener("click", moveLeft);
+      btnRight.addEventListener("click", moveRight);
+
+      leaderboardTitle.style.display = "block";
+      leaderboardDiv.style.display = "block";
+      renderLeaderboard();
+
+      requestAnimationFrame(gameLoop);
+    </script>
+  </body>
+</html>
