@@ -703,11 +703,11 @@
 
           // Compose tweet text
           const tweetText = encodeURIComponent(
-            `Hey!! The Aztec Goose Catcher Game Is Awesome & I Scored "${scoreText}" points in the game. Can you guys beat me? 🐦🦢 #AztecGooseCatcher`
+            `Hey!! The Aztec Goose Catcher Game Is Awesome & I Scored "${scoreText}" points in the game. Can you guys beat me? 🐦🦢 #Aztec @AztecNetwork #AztecGooseCatcher`
           );
 
           // Your game URL for sharing - replace this with your hosted game URL
-          const gameURL = encodeURIComponent("YOUR_GAME_URL_HERE");
+          const gameURL = encodeURIComponent("https://aztec-goose-catcher.vercel.app");
 
           const twitterURL = `https://twitter.com/intent/tweet?text=${tweetText}&url=${gameURL}`;
           window.open(twitterURL, "_blank");
