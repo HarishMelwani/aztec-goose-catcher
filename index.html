@@ -312,18 +312,36 @@
     </div>
 
     <!-- Background music -->
-    <audio
-      id="bg-music"
-      src="https://dl.dropboxusercontent.com/scl/fi/sqvin6ui1p3gde9cndm27/Aztec-goose-catcher.mp3?rlkey=2er8mjyc9arinkh019kvm6eal&st=83i6l0ph&dl=0"
-      loop
-      autoplay
-      muted
-    ></audio>
-    <div style="text-align: center; margin-top: 10px">
-      <button id="music-toggle" aria-label="Toggle Background Music">
-        🔈 Music Off
-      </button>
-    </div>
+<audio
+  id="bg-music"
+  src="https://dl.dropboxusercontent.com/scl/fi/sqvin6ui1p3gde9cndm27/Aztec-goose-catcher.mp3?rlkey=2er8mjyc9arinkh019kvm6eal&st=83i6l0ph&dl=0"
+  loop
+></audio>
+
+<div style="text-align: center; margin-top: 10px">
+  <button id="music-toggle" aria-label="Toggle Background Music">
+    🔈 Music On
+  </button>
+</div>
+
+<script>
+  const audio = document.getElementById('bg-music');
+  const toggleButton = document.getElementById('music-toggle');
+
+  let isPlaying = false;
+
+  toggleButton.addEventListener('click', () => {
+    if (isPlaying) {
+      audio.pause();
+      toggleButton.textContent = '🔈 Music Off';
+    } else {
+      audio.play().catch(err => console.error("Playback error:", err));
+      toggleButton.textContent = '🔊 Music On';
+    }
+    isPlaying = !isPlaying;
+  });
+</script>
+
 
 <!-- html2canvas (for screenshot capture) -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
