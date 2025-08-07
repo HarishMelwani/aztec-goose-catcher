@@ -690,15 +690,7 @@
           .replace("Score: ", "")
           .trim();
 
-        html2canvas(gameArea).then((canvas) => {
-          // Trigger download of the screenshot PNG
-          canvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "aztec-goose-catcher-score.png";
-            link.click();
-            URL.revokeObjectURL(url);
+    
           });
 
           // Compose tweet text
